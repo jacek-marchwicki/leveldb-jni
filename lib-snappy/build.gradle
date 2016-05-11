@@ -1,0 +1,83 @@
+/**
+ * Copyright [2016] <jacek.marchwicki@gmail.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+apply plugin: 'com.android.model.native'
+
+model {
+    android {
+        compileSdkVersion = 23
+        buildToolsVersion = '23.0.2'
+
+        defaultConfig.with {
+            minSdkVersion.apiLevel = 9
+            targetSdkVersion.apiLevel = 23
+            versionCode = 1
+            versionName = '0.0.1'
+        }
+
+        ndk {
+            moduleName = 'snappy'
+            platformVersion = 9
+            stl = 'gnustl_static'
+            ldLibs.addAll(['log', 'android'])
+            ldFlags.add('-c')
+        }
+
+        sources {
+            main {
+                jni {
+                    source {
+                        srcDirs 'src/main/snappy-jni/'
+                        exclude '**/*-test.cc'
+                    }
+                    exportedHeaders {
+                        srcDir "src/main/snappy-jni/"
+                    }
+                }
+            }
+        }
+        buildTypes {
+            release {
+                minifyEnabled = false
+                proguardFiles.add(file('proguard-rules.txt'))
+            }
+        }
+    }
+
+}
+
+tasks.create(name:'autogen', type: Exec) {
+    inputs.file file('src/main/snappy-jni/configure.ac')
+    outputs.dir file('src/main/snappy-jni/configure')
+
+    workingDir 'src/main/snappy-jni'
+    commandLine "sh", "autogen.sh"
+}
+
+tasks.create(name:'configure', type: Exec) {
+    dependsOn 'autogen'
+    inputs.file file('src/main/snappy-jni/configure.ac')
+    outputs.dir file('src/main/snappy-jni/config.h')
+
+    workingDir 'src/main/snappy-jni'
+    commandLine "sh", "configure"
+}
+
+tasks.whenTaskAdded { task ->
+    if (task.name.contains('compile')) {
+        task.dependsOn "configure"
+    }
+}

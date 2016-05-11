@@ -1,0 +1,69 @@
+/**
+ * Copyright [2016] <jacek.marchwicki@gmail.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+apply plugin: 'com.android.model.native'
+
+model {
+    android {
+        compileSdkVersion = 23
+        buildToolsVersion = '23.0.2'
+
+        defaultConfig.with {
+            minSdkVersion.apiLevel = 8
+            targetSdkVersion.apiLevel = 23
+        }
+
+        ndk {
+            platformVersion = 9
+            moduleName = 'leveldb'
+            stl = 'gnustl_static'
+            cppFlags.addAll(['-std=c++11', '-Wall',
+                             '-fno-exceptions', '-fno-rtti'])
+            cppFlags.addAll(['-I' + file('src/main/leveldb-jni/include')])
+            CFlags.addAll(['-I' + file('src/main/leveldb-jni/include')])
+            cppFlags.addAll(['-I' + file('src/main/leveldb-jni')])
+            CFlags.addAll(['-I' + file('src/main/leveldb-jni')])
+            cppFlags.addAll(['-D_REENTRANT', '-DOS_ANDROID', '-DLEVELDB_PLATFORM_POSIX', '-DNDEBUG', '-DSNAPPY'])
+        }
+
+        sources {
+            main {
+                jni {
+                    dependencies {
+                        project ':lib-snappy' linkage 'static'
+                    }
+                    source {
+                        srcDirs 'src/main/leveldb-jni'
+                        exclude '**/db_bench*.cc'
+                        exclude '**/*_test.cc'
+                        exclude '**/*_test.c'
+                    }
+                    exportedHeaders {
+                        srcDir "src/main/leveldb-jni/include"
+                    }
+                }
+            }
+        }
+        buildTypes {
+            release {
+                minifyEnabled = false
+                proguardFiles.add(file('proguard-rules.txt'))
+            }
+        }
+    }
+
+}

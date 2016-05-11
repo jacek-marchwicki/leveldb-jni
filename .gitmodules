@@ -1,0 +1,6 @@
+[submodule "lib-snappy/src/main/snappy-jni"]
+	path = lib-snappy/src/main/snappy-jni
+	url = https://github.com/google/snappy.git
+[submodule "lib-leveldb/src/main/leveldb-jni"]
+	path = lib-leveldb/src/main/leveldb-jni
+	url = https://github.com/google/leveldb.git
