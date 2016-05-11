@@ -20,7 +20,7 @@ apply plugin: 'com.github.dcendents.android-maven'
 
 group = 'com.appunite'
 archivesBaseName = 'lib-leveldb-jni'
-version = '0.0.1'
+version = '0.0.2'
 
 ext {
     appDescription = "Is very fast easy to use key-value database for Android"
@@ -86,7 +86,6 @@ dependencies {
 
 install {
     repositories.mavenInstaller {
-        // This generates POM.xml with proper parameters
         pom {
             project {
                 packaging 'aar'
@@ -144,5 +143,10 @@ bintray {
         vcsUrl = appGirUrl
         publish = true
         publicDownloadNumbers = true
+        version {
+            gpg {
+                sign = true
+            }
+        }
     }
 }
