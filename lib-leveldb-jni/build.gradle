@@ -15,6 +15,18 @@
  */
 
 apply plugin: 'com.android.model.library'
+apply plugin: 'com.github.dcendents.android-maven'
+
+
+group = 'com.appunite'
+archivesBaseName = 'lib-leveldb-jni'
+version = '0.0.1'
+
+ext {
+    appDescription = "Is very fast easy to use key-value database for Android"
+    appWebsiteUrl = "https://github.com/jacek-marchwicki/leveldb-jni"
+    appGirUrl = 'https://github.com/jacek-marchwicki/leveldb-jni.git'
+}
 
 model {
 
@@ -70,4 +82,67 @@ dependencies {
     androidTestCompile 'com.google.truth:truth:0.25'
     androidTestCompile 'com.android.support.test:runner:0.3'
     androidTestCompile 'com.android.support.test:rules:0.3'
+}
+
+install {
+    repositories.mavenInstaller {
+        // This generates POM.xml with proper parameters
+        pom {
+            project {
+                packaging 'aar'
+
+                // Add your description here
+                name "LevelDB-jni"
+
+                description appDescription
+
+                url appWebsiteUrl
+
+                licenses {
+                    license {
+                        name 'The Apache License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id 'jacek'
+                        name 'Jacek Marchwicki'
+                        email 'jacek.marchwicki@gmail.com'
+                    }
+                }
+                scm {
+                    connection 'scm:git:https://github.com/jacek-marchwicki/leveldb-jni.git'
+                    developerConnection 'scm:git:https://github.com/jacek-marchwicki/leveldb-jni.git'
+                    url appGirUrl
+                }
+            }
+        }
+    }
+}
+
+apply plugin: 'com.jfrog.bintray'
+
+artifacts {
+}
+
+// Bintray
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+bintray {
+    user = properties.getProperty("bintray.user")
+    key = properties.getProperty("bintray.apikey")
+
+    configurations = ['archives']
+    pkg {
+        repo = 'maven'
+        name = archivesBaseName
+        desc = appDescription
+        licenses = ["Apache-2.0"]
+        websiteUrl = appWebsiteUrl
+        vcsUrl = appGirUrl
+        publish = true
+        publicDownloadNumbers = true
+    }
 }

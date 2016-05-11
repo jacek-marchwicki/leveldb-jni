@@ -12,6 +12,21 @@ git submodule update --init && ./gradlew build
 
 ## How to use
 
+Add to your `build.gradle` file:
+
+```gradle
+repositories {
+    maven {
+        url 'https://dl.bintray.com/jacek-marchwicki/maven/'
+    }
+}
+dependencies {
+    compile 'com.appunite:lib-leveldb-jni:0.0.1'
+}
+```
+
+type in your code:
+
 ```java
 byte[] KEY = "key".getBytes();
 final LevelDB db = new LevelDB(context.getDatabasePath("database.leveldb").getAbsolutePath());
