@@ -2,6 +2,8 @@ LevelDB Android JNI
 
 Is very fast easy to use key-value database for Android 
 
+[![Build Status](https://travis-ci.org/jacek-marchwicki/leveldb-jni.svg?branch=master)](https://travis-ci.org/jacek-marchwicki/leveldb-jni)
+
 # How to build
 
 ```bash
