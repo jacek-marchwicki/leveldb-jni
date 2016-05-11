@@ -20,7 +20,7 @@ final String value = new String(db.getString(KEY));
 db.close();
 ```
 
-More examples available in (test class)[lib-leveldb-jni/src/androidTest/java/com/appunite/leveldb/LevelDBTest.java]
+More examples available in [test class](lib-leveldb-jni/src/androidTest/java/com/appunite/leveldb/LevelDBTest.java)
 
 ## Proguard
 
