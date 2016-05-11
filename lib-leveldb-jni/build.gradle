@@ -125,13 +125,9 @@ apply plugin: 'com.jfrog.bintray'
 artifacts {
 }
 
-// Bintray
-Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
-
 bintray {
-    user = properties.getProperty("bintray.user")
-    key = properties.getProperty("bintray.apikey")
+    user = project.ext.hasProperty("bintray.user") ? project.ext.getProperty("bintray.user") : ""
+    key =project.ext.hasProperty("bintray.apikey") ?  project.ext.getProperty("bintray.apikey") : ""
 
     configurations = ['archives']
     pkg {
