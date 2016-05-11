@@ -6,6 +6,8 @@ android:
     - platform-tools
     - build-tools-23.0.2
     - android-23
+    - extra-google-m2repository
+    - extra-android-m2repository
 addons:
   artifacts:
     paths:
