@@ -1,16 +1,16 @@
-LevelDB Android JNI
+# LevelDB Android JNI
 
 Is very fast easy to use key-value database for Android 
 
 [![Build Status](https://travis-ci.org/jacek-marchwicki/leveldb-jni.svg?branch=master)](https://travis-ci.org/jacek-marchwicki/leveldb-jni)
 
-# How to build
+## How to build
 
 ```bash
 git submodule update --init && ./gradlew build
 ```
 
-# How to use
+## How to use
 
 ```java
 byte[] KEY = "key".getBytes();
@@ -22,7 +22,7 @@ db.close();
 
 More examples available in (test class)[lib-leveldb-jni/src/androidTest/java/com/appunite/leveldb/LevelDBTest.java]
 
-# Proguard
+## Proguard
 
 This is very short library so you can simple add everything to proguard keep:
 
@@ -32,14 +32,14 @@ This is very short library so you can simple add everything to proguard keep:
 }
 ```
 
-# Credits
+## Credits
 
 - Thanks to Nabil HACHICHA for writing SnappyDB https://github.com/nhachicha/SnappyDB
 - Thanks to Moyang Wang for writing https://github.com/googolmo/Leveldb-Android
 - Thanks to Google folks for writing https://github.com/google/leveldb and https://github.com/google/snappy
 - Thanks to for Android tools team for writing ndk plugin http://tools.android.com/tech-docs/new-build-system/gradle-experimental
 
-# License
+## License
 
 ```
 Copyright [2016] <jacek.marchwicki@gmail.com>
