@@ -170,7 +170,6 @@ void jni_database_delete(JNIEnv *env, jobject thiz, jbyteArray jkey) {
 
 void jni_database_put_bytes(JNIEnv *env, jobject thiz, jbyteArray jkey, jbyteArray jvalue) {
     struct DatabaseNative *native = database_get_native(env, thiz);
-    LOGI("Putting a Serializable");
     if (native == NULL) {
         genearal_exception_throw(env, "Database is not open");
         return;
