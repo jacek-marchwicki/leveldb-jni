@@ -21,7 +21,7 @@ repositories {
     }
 }
 dependencies {
-    compile 'com.appunite:lib-leveldb-jni:0.0.1'
+    compile 'com.appunite:lib-leveldb-jni:0.0.3'
 }
 ```
 
