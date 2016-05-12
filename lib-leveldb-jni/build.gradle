@@ -126,8 +126,8 @@ artifacts {
 }
 
 bintray {
-    user = project.ext.hasProperty("bintray.user") ? project.ext.getProperty("bintray.user") : ""
-    key =project.ext.hasProperty("bintray.apikey") ?  project.ext.getProperty("bintray.apikey") : ""
+    user = project.ext.has("bintray.user") ? project.ext.get("bintray.user") : ""
+    key = project.ext.has("bintray.apikey") ?  project.ext.get("bintray.apikey") : ""
 
     configurations = ['archives']
     pkg {
