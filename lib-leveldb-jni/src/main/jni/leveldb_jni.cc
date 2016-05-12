@@ -31,28 +31,42 @@ static const char *iterator_class_path_name = "com/appunite/leveldb/LevelIterato
 static const char *general_exception_class_path_name = "com/appunite/leveldb/LevelDBException";
 static const char *key_not_found_exception_class_path_name = "com/appunite/leveldb/KeyNotFoundException";
 
+static jfieldID database_clazz_field_native = NULL;
+static jfieldID iterator_clazz_field_native = NULL;
+
+
+void prepare_database_claszz_field_native(JNIEnv *env) {
+    if (database_clazz_field_native == NULL) {
+        jclass database_clazz = env->FindClass(database_class_path_name);
+        database_clazz_field_native = env->GetFieldID(database_clazz, "nativeDB", "J");
+    }
+}
+
+void prepare_iterator_claszz_field_native(JNIEnv *env) {
+    if (iterator_clazz_field_native == NULL) {
+        jclass iterator_clazz = env->FindClass(iterator_class_path_name);
+        iterator_clazz_field_native = env->GetFieldID(iterator_clazz, "nativePointer", "J");
+    }
+}
+
 void database_set_native(JNIEnv *env, jobject thiz, struct DatabaseNative *native_db) {
-    jclass clazz = env->FindClass(database_class_path_name);
-    jfieldID m_native_layer_field = env->GetFieldID(clazz, "nativeDB", "J");
-    env->SetLongField(thiz, m_native_layer_field, (jlong) native_db);
+    prepare_database_claszz_field_native(env);
+    env->SetLongField(thiz, database_clazz_field_native, (jlong) native_db);
 }
 
 struct DatabaseNative *database_get_native(JNIEnv *env, jobject thiz) {
-    jclass clazz = env->FindClass(database_class_path_name);
-    jfieldID m_native_layer_field = env->GetFieldID(clazz, "nativeDB", "J");
-    return (struct DatabaseNative * )env->GetLongField(thiz, m_native_layer_field);
+    prepare_database_claszz_field_native(env);
+    return (struct DatabaseNative * )env->GetLongField(thiz, database_clazz_field_native);
 }
 
 void iterator_set_native(JNIEnv *env, jobject thiz, struct IteratorNative *native_it) {
-    jclass clazz = env->FindClass(iterator_class_path_name);
-    jfieldID m_native_layer_field = env->GetFieldID(clazz, "nativePointer", "J");
-    env->SetLongField(thiz, m_native_layer_field, (jlong) native_it);
+    prepare_iterator_claszz_field_native(env);
+    env->SetLongField(thiz, iterator_clazz_field_native, (jlong) native_it);
 }
 
 struct IteratorNative *iterator_net_native(JNIEnv *env, jobject thiz) {
-    jclass clazz = env->FindClass(iterator_class_path_name);
-    jfieldID m_native_layer_field = env->GetFieldID(clazz, "nativePointer", "J");
-    return (struct IteratorNative * )env->GetLongField(thiz, m_native_layer_field);
+    prepare_iterator_claszz_field_native(env);
+    return (struct IteratorNative * )env->GetLongField(thiz, iterator_clazz_field_native);
 }
 
 
