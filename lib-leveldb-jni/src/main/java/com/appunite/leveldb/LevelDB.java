@@ -44,43 +44,43 @@ public class LevelDB implements Closeable {
     }
 
     public void putBytes(byte[] key, byte[] value) throws LevelDBException {
-        checkIfClosed();
+        checkIfNotClosed();
         checkKey(key);
         checkValue(value);
         nativePutBytes(nativeDB, key, value);
     }
 
-    private void checkIfClosed() throws LevelDBException {
+    private void checkIfNotClosed() throws LevelDBException {
         if (closed) {
             throw new LevelDBException("Database closed");
         }
     }
 
     public byte[] getBytes(byte[] key) throws LevelDBException, KeyNotFoundException {
-        checkIfClosed();
+        checkIfNotClosed();
         checkKey(key);
         return nativeGetBytes(nativeDB, key);
     }
 
     public void delete(byte[] key) throws LevelDBException {
-        checkIfClosed();
+        checkIfNotClosed();
         checkKey(key);
         nativeDelete(nativeDB, key);
     }
 
     public boolean exists(byte[] key) throws LevelDBException {
-        checkIfClosed();
+        checkIfNotClosed();
         checkKey(key);
         return nativeExists(nativeDB, key);
     }
 
     public LevelIterator newInterator() throws LevelDBException {
-        checkIfClosed();
+        checkIfNotClosed();
         return nativeIterator(nativeDB);
     }
 
     public void write(WriteBatch batch) throws LevelDBException {
-        checkIfClosed();
+        checkIfNotClosed();
         if (batch == null) {
             throw new NullPointerException("Batch can not be null");
         }

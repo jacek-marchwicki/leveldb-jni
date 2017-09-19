@@ -15,12 +15,6 @@
  */
 
 #include "leveldb_jni.h"
-//#include "../../../../lib-leveldb/src/main/leveldb-jni/include/leveldb/status.h"
-//#include "../../../../lib-leveldb/src/main/leveldb-jni/include/leveldb/options.h"
-//#include "../../../../lib-leveldb/src/main/leveldb-jni/include/leveldb/db.h"
-//#include "../../../../lib-leveldb/src/main/leveldb-jni/include/leveldb/iterator.h"
-//#include "../../../../lib-leveldb/src/main/leveldb-jni/include/leveldb/slice.h"
-//#include "../../../../lib-leveldb/src/main/leveldb-jni/include/leveldb/write_batch.h"
 #include <stdlib.h>
 #include <sstream>
 
