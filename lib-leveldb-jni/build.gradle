@@ -78,6 +78,8 @@ model {
 }
 
 dependencies {
+    compile 'com.android.support:support-annotations:24.2.0'
+
     androidTestCompile 'junit:junit-dep:4.11'
     androidTestCompile 'com.google.truth:truth:0.25'
     androidTestCompile 'com.android.support.test:runner:0.3'

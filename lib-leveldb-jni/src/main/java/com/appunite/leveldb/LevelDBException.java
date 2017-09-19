@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright [2016] <jacek.marchwicki@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,20 +16,27 @@
 
 package com.appunite.leveldb;
 
+import android.support.annotation.Keep;
+
+@Keep
 public class LevelDBException extends Exception {
 
+    @Keep
     public LevelDBException() {
         super();
     }
 
+    @Keep
     public LevelDBException(String detailMessage) {
         super(detailMessage);
     }
 
+    @Keep
     public LevelDBException(String detailMessage, Throwable throwable) {
         super(detailMessage, throwable);
     }
 
+    @Keep
     public LevelDBException(Throwable throwable) {
         super(throwable);
     }

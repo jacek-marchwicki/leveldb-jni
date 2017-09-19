@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright [2016] <jacek.marchwicki@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,56 +16,78 @@
 
 package com.appunite.leveldb;
 
+import android.support.annotation.Keep;
+
 import java.io.Closeable;
 
 public class LevelIterator implements Closeable {
-    @SuppressWarnings("unused")
-    /**
-     * We need use this field inside JNI
-     */
     private final long nativePointer;
+    private boolean closed = false;
 
+    @Keep
     LevelIterator(long nativePointer) {
         this.nativePointer = nativePointer;
     }
 
     @Override
     public void close() {
-        nativeClose();
+        if (!closed) {
+            nativeClose(nativePointer);
+            closed = true;
+        }
     }
 
-    public void seekToFirst(byte[] startingKey) {
-        nativeSeekToFirst(startingKey);
+    public void seekToFirst(byte[] startingKey) throws LevelDBException {
+        checkIfNotClosed();
+        nativeSeekToFirst(nativePointer, startingKey);
     }
 
-    public void seekToFirst() {
-        nativeSeekToFirst();
+    private void checkIfNotClosed() throws LevelDBException {
+        if (closed) {
+            throw new LevelDBException("Iterator closed");
+        }
+    }
+
+    public void seekToFirst() throws LevelDBException {
+        checkIfNotClosed();
+        nativeSeekToFirst(nativePointer);
     }
 
 
-    public boolean isValid() {
-        return nativeIsValid();
+    public boolean isValid() throws LevelDBException {
+        checkIfNotClosed();
+        return nativeIsValid(nativePointer);
     }
 
-    public byte[] key() {
-        return nativeKey();
+    public byte[] key() throws LevelDBException {
+        checkIfNotClosed();
+        return nativeKey(nativePointer);
     }
 
 
-    public byte[] value() {
-        return nativeValue();
+    public byte[] value() throws LevelDBException {
+        checkIfNotClosed();
+        return nativeValue(nativePointer);
     }
 
-    public void next() {
-        nativeNext();
+    public void next() throws LevelDBException {
+        checkIfNotClosed();
+        nativeNext(nativePointer);
     }
 
-    private native void nativeClose();
-    private native void nativeSeekToFirst();
-    private native void nativeSeekToFirst(byte[] startingKey);
-    private native boolean nativeIsValid();
-    private native byte[] nativeKey();
-    private native byte[] nativeValue();
-    private native void nativeNext();
+    @Keep
+    private native void nativeClose(long nativePointer);
+    @Keep
+    private native void nativeSeekToFirst(long nativePointer);
+    @Keep
+    private native void nativeSeekToFirst(long nativePointer, byte[] startingKey);
+    @Keep
+    private native boolean nativeIsValid(long nativePointer);
+    @Keep
+    private native byte[] nativeKey(long nativePointer);
+    @Keep
+    private native byte[] nativeValue(long nativePointer);
+    @Keep
+    private native void nativeNext(long nativePointer);
 
 }

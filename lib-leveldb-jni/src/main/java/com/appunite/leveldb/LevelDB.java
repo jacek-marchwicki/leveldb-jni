@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright [2016] <jacek.marchwicki@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,7 @@
 
 package com.appunite.leveldb;
 
+import android.support.annotation.Keep;
 import android.text.TextUtils;
 
 import java.io.Closeable;
@@ -26,48 +27,60 @@ public class LevelDB implements Closeable {
         System.loadLibrary("leveldb-jni");
     }
 
-    @SuppressWarnings("unused")
-    /**
-     * We need use this field inside JNI
-     */
-    private long nativeDB;
+    private final long nativeDB;
+    private boolean closed = false;
 
     public LevelDB(String path) throws LevelDBException {
         checkPath(path);
-        nativeOpen(path);
+        nativeDB = nativeOpen(path);
     }
 
     @Override
     public void close() {
-        nativeClose();
+        if (!closed) {
+            nativeClose(nativeDB);
+            closed = true;
+        }
     }
 
     public void putBytes(byte[] key, byte[] value) throws LevelDBException {
+        checkIfClosed();
         checkKey(key);
         checkValue(value);
-        nativePutBytes(key, value);
+        nativePutBytes(nativeDB, key, value);
+    }
+
+    private void checkIfClosed() throws LevelDBException {
+        if (closed) {
+            throw new LevelDBException("Database closed");
+        }
     }
 
     public byte[] getBytes(byte[] key) throws LevelDBException, KeyNotFoundException {
+        checkIfClosed();
         checkKey(key);
-        return nativeGetBytes(key);
+        return nativeGetBytes(nativeDB, key);
     }
 
     public void delete(byte[] key) throws LevelDBException {
+        checkIfClosed();
         checkKey(key);
-        nativeDelete(key);
+        nativeDelete(nativeDB, key);
     }
 
     public boolean exists(byte[] key) throws LevelDBException {
+        checkIfClosed();
         checkKey(key);
-        return nativeExists(key);
+        return nativeExists(nativeDB, key);
     }
 
     public LevelIterator newInterator() throws LevelDBException {
-        return nativeIterator();
+        checkIfClosed();
+        return nativeIterator(nativeDB);
     }
 
     public void write(WriteBatch batch) throws LevelDBException {
+        checkIfClosed();
         if (batch == null) {
             throw new NullPointerException("Batch can not be null");
         }
@@ -98,14 +111,23 @@ public class LevelDB implements Closeable {
         }
     }
 
-    private native void nativeOpen(String databasePath);
-    private native void nativeClose();
-    private native void nativePutBytes(byte[] key, byte[] value);
-    private native byte[] nativeGetBytes(byte[] key);
-    private native void nativeDelete(byte[] key);
-    private native boolean nativeExists(byte[] key);
-    private native LevelIterator nativeIterator();
+    @Keep
+    private native long nativeOpen(String databasePath);
+    @Keep
+    private native void nativeClose(long nativePointer);
+    @Keep
+    private native void nativePutBytes(long nativePointer, byte[] key, byte[] value);
+    @Keep
+    private native byte[] nativeGetBytes(long nativePointer, byte[] key);
+    @Keep
+    private native void nativeDelete(long nativePointer, byte[] key);
+    @Keep
+    private native boolean nativeExists(long nativePointer, byte[] key);
+    @Keep
+    private native LevelIterator nativeIterator(long nativePointer);
+    @Keep
     private static native void nativeDestroy(String databasePath);
-    private native void nativeWrite(long nativeDB, long writeBatchNativePointer);
+    @Keep
+    private native void nativeWrite(long nativePointer, long writeBatchNativePointer);
 
 }
