@@ -384,9 +384,7 @@ void jni_write_batch_clear(JNIEnv *env, jobject thiz, jlong nativePointer) {
 
 void jni_write_batch_free(JNIEnv *env, jobject thiz, jlong nativePointer) {
     struct WriteBatchNative *native = (WriteBatchNative *) nativePointer;
-    if (native != NULL) {
-        free(native);
-    }
+    free(native);
 }
 
 static JNINativeMethod database_methods[] = {
