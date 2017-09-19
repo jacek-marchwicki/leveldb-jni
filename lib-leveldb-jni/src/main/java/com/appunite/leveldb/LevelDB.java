@@ -67,6 +67,14 @@ public class LevelDB implements Closeable {
         return nativeIterator();
     }
 
+    public void write(WriteBatch batch) throws LevelDBException {
+        if (batch == null) {
+            throw new NullPointerException("Batch can not be null");
+        }
+        nativeWrite(nativeDB, batch.nativePointer);
+    }
+
+
     public static void destroy(String path) throws LevelDBException {
         checkPath(path);
         nativeDestroy(path);
@@ -78,13 +86,13 @@ public class LevelDB implements Closeable {
         }
     }
 
-    private static void checkValue(Object value) {
+    static void checkValue(Object value) {
         if (value == null) {
             throw new NullPointerException("value parameter can not be null");
         }
     }
 
-    private static void checkKey(byte[] key) {
+    static void checkKey(byte[] key) {
         if (key == null || key.length == 0) {
             throw new NullPointerException("key parameter can not be null");
         }
@@ -98,5 +106,6 @@ public class LevelDB implements Closeable {
     private native boolean nativeExists(byte[] key);
     private native LevelIterator nativeIterator();
     private static native void nativeDestroy(String databasePath);
+    private native void nativeWrite(long nativeDB, long writeBatchNativePointer);
 
 }

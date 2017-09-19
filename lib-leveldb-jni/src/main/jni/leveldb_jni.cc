@@ -26,14 +26,18 @@ struct IteratorNative {
     leveldb::Iterator* it;
 };
 
+struct WriteBatchNative {
+    leveldb::WriteBatch* batch;
+};
+
 static const char *database_class_path_name = "com/appunite/leveldb/LevelDB";
 static const char *iterator_class_path_name = "com/appunite/leveldb/LevelIterator";
+static const char *write_batch_class_path_name = "com/appunite/leveldb/WriteBatch";
 static const char *general_exception_class_path_name = "com/appunite/leveldb/LevelDBException";
 static const char *key_not_found_exception_class_path_name = "com/appunite/leveldb/KeyNotFoundException";
 
 static jfieldID database_clazz_field_native = NULL;
 static jfieldID iterator_clazz_field_native = NULL;
-
 
 void prepare_database_claszz_field_native(JNIEnv *env) {
     if (database_clazz_field_native == NULL) {
@@ -399,6 +403,104 @@ void jni_iterator_next(JNIEnv *env, jobject thiz) {
     }
 }
 
+void jni_database_write(JNIEnv *env, jobject thiz, jlong nativePointer, jlong writeBatchNativePointer) {
+    struct WriteBatchNative *nativeBatch = (WriteBatchNative *) writeBatchNativePointer;
+    if (nativeBatch == NULL) {
+        genearal_exception_throw(env, "WriteBatch is not open");
+        return;
+    }
+    struct DatabaseNative *native = (DatabaseNative *) nativePointer;
+    if (native == NULL) {
+        genearal_exception_throw(env, "Database is not open");
+        return;
+    }
+
+    leveldb::Status status = native->db->Write(leveldb::WriteOptions(), nativeBatch->batch);
+
+    if (!status.ok()) {
+        database_release_if_not_released(env, thiz);
+        genearal_exception_throw(env, status.ToString().c_str());
+        return;
+    }
+}
+
+jlong jni_write_batch_create(JNIEnv *env, jobject thiz) {
+    struct WriteBatchNative *native = (struct WriteBatchNative *)malloc(sizeof(struct WriteBatchNative));
+    if (native == NULL) {
+        genearal_exception_throw(env, "OutOfMemory");
+        return 0;
+    }
+    memset(native, 0, sizeof(*native));
+
+    native->batch = new leveldb::WriteBatch;
+    return (jlong)native;
+}
+
+void jni_write_batch_put_bytes(JNIEnv *env, jobject thiz, jlong nativePointer, jbyteArray jkey, jbyteArray jvalue) {
+    struct WriteBatchNative *native = (WriteBatchNative *) nativePointer;
+    if (native == NULL) {
+        genearal_exception_throw(env, "WriteBatch is not open");
+        return;
+    }
+
+    size_t value_len = (size_t) env->GetArrayLength(jvalue);
+    jbyte* value_bytes = (jbyte*)env->GetPrimitiveArrayCritical(jvalue, 0);
+
+    if (value_bytes == NULL) {
+        genearal_exception_throw(env, "OutOfMemory");
+        return;
+    }
+
+    size_t key_len = (size_t) env->GetArrayLength(jkey);
+    jbyte* key_bytes = (jbyte*)env->GetPrimitiveArrayCritical(jkey, 0);
+    if (key_bytes == NULL) {
+        genearal_exception_throw(env, "OutOfMemory");
+        return;
+    }
+
+    leveldb::Slice key = leveldb::Slice(reinterpret_cast<char*>(key_bytes), key_len);
+    leveldb::Slice value = leveldb::Slice(reinterpret_cast<char*>(value_bytes), value_len);
+
+    native->batch->Put(key, value);
+
+    env->ReleasePrimitiveArrayCritical(jvalue, value_bytes, 0);
+    env->ReleasePrimitiveArrayCritical(jkey, key_bytes, 0);
+}
+
+void jni_write_batch_delete(JNIEnv *env, jobject thiz, jlong nativePointer, jbyteArray jkey) {
+    struct WriteBatchNative *native = (WriteBatchNative *) nativePointer;
+    if (native == NULL) {
+        genearal_exception_throw(env, "Batch is not open");
+        return;
+    }
+
+    size_t key_len = (size_t) env->GetArrayLength(jkey);
+    jbyte* key_bytes = (jbyte*)env->GetPrimitiveArrayCritical(jkey, 0);
+    if (key_bytes == NULL) {
+        genearal_exception_throw(env, "OutOfMemory");
+    } else {
+        leveldb::Slice key = leveldb::Slice(reinterpret_cast<char*>(key_bytes), key_len);
+        native->batch->Delete(key);
+        env->ReleasePrimitiveArrayCritical(jkey, key_bytes, 0);
+    }
+}
+
+void jni_write_batch_clear(JNIEnv *env, jobject thiz, jlong nativePointer) {
+    struct WriteBatchNative *native = (WriteBatchNative *) nativePointer;
+    if (native == NULL) {
+        genearal_exception_throw(env, "Batch is not open");
+        return;
+    }
+    native->batch->Clear();
+}
+
+void jni_write_batch_free(JNIEnv *env, jobject thiz, jlong nativePointer) {
+    struct WriteBatchNative *native = (WriteBatchNative *) nativePointer;
+    if (native != NULL) {
+        free(native);
+    }
+}
+
 static JNINativeMethod database_methods[] = {
     { "nativeOpen", "(Ljava/lang/String;)V", (void*) jni_database_open},
     { "nativeClose", "()V", (void*) jni_database_close},
@@ -407,6 +509,7 @@ static JNINativeMethod database_methods[] = {
     { "nativeDelete", "([B)V", (void*) jni_database_delete},
     { "nativeExists", "([B)Z", (void*) jni_database_exists},
     { "nativeIterator", "()Lcom/appunite/leveldb/LevelIterator;", (void*) jni_database_iterator},
+    { "nativeWrite", "(JJ)V", (void*) jni_database_write},
     { "nativeDestroy", "(Ljava/lang/String;)V", (void*) jni_database_destroy}
 };
 
@@ -418,6 +521,14 @@ static JNINativeMethod iterator_methods[] = {
         { "nativeKey", "()[B", (void*) jni_iterator_key},
         { "nativeValue", "()[B", (void*) jni_iterator_value},
         { "nativeNext", "()V", (void*) jni_iterator_next},
+};
+
+static JNINativeMethod write_batch_methods[] = {
+        { "nativeCreate", "()J", (void*) jni_write_batch_create},
+        { "nativePutBytes", "(J[B[B)V", (void*) jni_write_batch_put_bytes},
+        { "nativeDelete", "(J[B)V", (void*) jni_write_batch_delete},
+        { "nativeClear", "(J)V", (void*) jni_write_batch_clear},
+        { "nativeFree", "(J)V", (void*) jni_write_batch_free},
 };
 
 
@@ -446,6 +557,16 @@ int JNI_OnLoad(JavaVM* vm, void *reserved) {
     }
 
     if (env->RegisterNatives(iterator_class, iterator_methods, NELEM(iterator_methods))) {
+        return JNI_ERR;
+    }
+
+    jclass write_batch_class = env->FindClass(write_batch_class_path_name);
+    if (!write_batch_class) {
+        LOGE("Can't find class %s", write_batch_class_path_name);
+        return JNI_ERR;
+    }
+
+    if (env->RegisterNatives(write_batch_class, write_batch_methods, NELEM(write_batch_methods))) {
         return JNI_ERR;
     }
 

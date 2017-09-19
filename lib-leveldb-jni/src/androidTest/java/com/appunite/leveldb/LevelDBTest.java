@@ -164,6 +164,93 @@ public class LevelDBTest {
     }
 
     @Test
+    public void testSaveManyValuesInBatch_valuesAreReturned() throws Exception {
+        final LevelDB db = new LevelDB(getDatabase("db"));
+        try {
+            final WriteBatch batch = new WriteBatch();
+            batch.putBytes(Utils.stringToBytes("key_1"), Utils.stringToBytes("value_1"));
+            batch.putBytes(Utils.stringToBytes("key_2"), Utils.stringToBytes("value_2"));
+            batch.putBytes(Utils.stringToBytes("key_3"), Utils.stringToBytes("value_3"));
+            db.write(batch);
+
+            assert_().that(db.getBytes(Utils.stringToBytes("key_1"))).isEqualTo(Utils.stringToBytes("value_1"));
+            assert_().that(db.getBytes(Utils.stringToBytes("key_2"))).isEqualTo(Utils.stringToBytes("value_2"));
+            assert_().that(db.getBytes(Utils.stringToBytes("key_3"))).isEqualTo(Utils.stringToBytes("value_3"));
+        } finally {
+            db.close();
+        }
+    }
+
+    @Test(expected = KeyNotFoundException.class)
+    public void testInBatchPutThenDelete() throws Exception {
+        final LevelDB db = new LevelDB(getDatabase("db"));
+        try {
+            final WriteBatch batch = new WriteBatch();
+            batch.putBytes(Utils.stringToBytes("key_1"), Utils.stringToBytes("value_1"));
+            batch.delete(Utils.stringToBytes("key_1"));
+            db.write(batch);
+
+            db.getBytes(Utils.stringToBytes("key_1"));
+        } finally {
+            db.close();
+        }
+    }
+
+    @Test(expected = KeyNotFoundException.class)
+    public void testInBatchDelete_isDeleted() throws Exception {
+        final LevelDB db = new LevelDB(getDatabase("db"));
+        try {
+            db.putBytes(Utils.stringToBytes("key_1"), Utils.stringToBytes("value_1"));
+
+            final WriteBatch batch = new WriteBatch();
+            batch.putBytes(Utils.stringToBytes("key_1"), Utils.stringToBytes("value_1"));
+            batch.delete(Utils.stringToBytes("key_1"));
+            db.write(batch);
+
+            db.getBytes(Utils.stringToBytes("key_1"));
+        } finally {
+            db.close();
+        }
+    }
+
+    @Test
+    public void testUsBatchTwice_itemIsStillAdded() throws Exception {
+        final LevelDB db = new LevelDB(getDatabase("db"));
+        try {
+            final WriteBatch batch = new WriteBatch();
+            batch.putBytes(Utils.stringToBytes("key_1"), Utils.stringToBytes("value_1"));
+            db.write(batch);
+
+            db.delete(Utils.stringToBytes("key_1"));
+
+            db.write(batch);
+
+            assert_().that(db.getBytes(Utils.stringToBytes("key_1"))).isEqualTo(Utils.stringToBytes("value_1"));
+        } finally {
+            db.close();
+        }
+    }
+
+    @Test(expected = KeyNotFoundException.class)
+    public void testUsBatchTwiceAfterClera_itemIsNotAdded() throws Exception {
+        final LevelDB db = new LevelDB(getDatabase("db"));
+        try {
+            final WriteBatch batch = new WriteBatch();
+            batch.putBytes(Utils.stringToBytes("key_1"), Utils.stringToBytes("value_1"));
+            db.write(batch);
+
+            db.delete(Utils.stringToBytes("key_1"));
+
+            batch.clear();
+            db.write(batch);
+
+            db.getBytes(Utils.stringToBytes("key_1"));
+        } finally {
+            db.close();
+        }
+    }
+
+    @Test
     public void testExistingValue_existIsTrue() throws Exception {
         final LevelDB db = new LevelDB(getDatabase("db"));
         try {

@@ -20,6 +20,7 @@
 #include <jni.h>
 #include <android/log.h>
 #include "leveldb/db.h"
+#include "leveldb/write_batch.h"
 
 #define  LOG_TAG    "LevelDB"
 #define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
