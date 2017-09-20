@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright [2016] <jacek.marchwicki@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,7 @@ import java.nio.charset.Charset;
 
 public class Utils {
 
-    public static final Charset UTF_8 = Charset.forName("UTF-8");
+    private static final Charset UTF_8 = Charset.forName("UTF-8");
 
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     public static byte[] stringToBytes(String string) {

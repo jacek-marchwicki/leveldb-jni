@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright [2016] <jacek.marchwicki@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,20 +16,27 @@
 
 package com.appunite.leveldb;
 
+import android.support.annotation.Keep;
+
+@Keep
 public class KeyNotFoundException extends Exception {
 
+    @Keep
     public KeyNotFoundException() {
         super();
     }
 
+    @Keep
     public KeyNotFoundException(String detailMessage) {
         super(detailMessage);
     }
 
+    @Keep
     public KeyNotFoundException(String detailMessage, Throwable throwable) {
         super(detailMessage, throwable);
     }
 
+    @Keep
     public KeyNotFoundException(Throwable throwable) {
         super(throwable);
     }
