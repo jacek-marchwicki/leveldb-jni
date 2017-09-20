@@ -20,7 +20,7 @@ apply plugin: 'com.github.dcendents.android-maven'
 
 group = 'com.appunite'
 archivesBaseName = 'lib-leveldb-jni'
-version = '0.0.5'
+version = '0.0.6'
 
 ext {
     appDescription = "Is very fast easy to use key-value database for Android"
