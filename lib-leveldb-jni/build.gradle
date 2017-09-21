@@ -31,12 +31,12 @@ ext {
 model {
 
     android {
-        compileSdkVersion = 23
-        buildToolsVersion = '23.0.2'
+        compileSdkVersion = 26
+        buildToolsVersion = '26.0.0'
 
         defaultConfig.with {
             minSdkVersion.apiLevel = 8
-            targetSdkVersion.apiLevel = 23
+            targetSdkVersion.apiLevel = 26
             testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         }
 
