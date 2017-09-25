@@ -72,3 +72,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
+### Upload to bintary
+
+```bash
+./gradlew build install
+./gradlew :lib-leveldb-jni:bintrayUpload
+```
