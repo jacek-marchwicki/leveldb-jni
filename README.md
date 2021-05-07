@@ -6,6 +6,8 @@ Is very fast easy to use key-value database for Android
 
 ## How to build
 
+It requires NDK 17.2.4988734 and GNU Autotools.
+
 ```bash
 git submodule update --init && ./gradlew build
 ```
