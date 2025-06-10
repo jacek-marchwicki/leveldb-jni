@@ -1,5 +1,5 @@
 /**
- * Copyright [2016] <jacek.marchwicki@gmail.com>
+ * Copyright [2025] <jacek.marchwicki@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,4 +14,10 @@
  * limitations under the License.
  */
 
-include ':sample', ':lib-snappy', ':lib-leveldb', ':lib-leveldb-jni'
+plugins {
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.kotlin.compose) apply false
+    alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.artifactregistry) apply false
+}

@@ -1,5 +1,5 @@
 /**
- * Copyright [2016] <jacek.marchwicki@gmail.com>
+ * Copyright [2025] <jacek.marchwicki@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@
 
 #include <jni.h>
 #include <android/log.h>
-#include "leveldb/db.h"
-#include "leveldb/write_batch.h"
+#include "leveldb/include/leveldb/db.h"
+#include "leveldb/include/leveldb/write_batch.h"
 
 #define  LOG_TAG    "LevelDB"
 #define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)

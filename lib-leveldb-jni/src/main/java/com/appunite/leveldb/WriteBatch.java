@@ -16,7 +16,7 @@
 
 package com.appunite.leveldb;
 
-import android.support.annotation.Keep;
+import androidx.annotation.Keep;
 
 public class WriteBatch {
 
