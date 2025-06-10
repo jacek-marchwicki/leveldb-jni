@@ -7,7 +7,7 @@ Is very fast easy to use key-value database for Android
 ## How to build
 
 ```bash
-git submodule update --init && ./gradlew build
+git submodule update --init --recursive && ./gradlew build
 ```
 
 ## How to use
@@ -57,7 +57,7 @@ This is very short library so you can simple add everything to proguard keep:
 ## License
 
 ```
-Copyright [2016] <jacek.marchwicki@gmail.com>
+Copyright [2025] <jacek.marchwicki@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -75,6 +75,8 @@ limitations under the License.
 ### Upload to bintary
 
 ```bash
-./gradlew build install
-./gradlew :lib-leveldb-jni:bintrayUpload
+./gradlew build check
+./gradlew :sample:installDebug
+./gradlew :lib-leveldb-jni:connectedAndroidTest
+./gradlew :lib-leveldb-jni:publish
 ```

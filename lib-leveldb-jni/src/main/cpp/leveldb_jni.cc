@@ -1,5 +1,5 @@
 /**
- * Copyright [2016] <jacek.marchwicki@gmail.com>
+ * Copyright [2025] <jacek.marchwicki@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -159,6 +159,7 @@ jbyteArray jni_database_get_bytes(JNIEnv *env, jobject thiz, jlong nativeObject,
     jbyte* key_bytes = (jbyte*)env->GetPrimitiveArrayCritical(jkey, 0);
     if (key_bytes == NULL) {
         genearal_exception_throw(env, "OutOfMemory");
+        return NULL;
     } else {
         leveldb::Slice key = leveldb::Slice(reinterpret_cast<char*>(key_bytes), key_len);
         std::string value;
@@ -173,8 +174,10 @@ jbyteArray jni_database_get_bytes(JNIEnv *env, jobject thiz, jlong nativeObject,
             return array;
         } else if (status.IsNotFound()) {
             key_not_found_exception_throw(env, "Not found");
+            return NULL;
         } else {
             genearal_exception_throw(env, status.ToString().c_str());
+            return NULL;
         }
     }
 }
@@ -185,6 +188,7 @@ jboolean jni_database_exists(JNIEnv *env, jobject thiz, jlong nativeObject, jbyt
     jbyte* key_bytes = (jbyte*)env->GetPrimitiveArrayCritical(jkey, 0);
     if (key_bytes == NULL) {
         genearal_exception_throw(env, "OutOfMemory");
+        return JNI_FALSE;
     } else {
         leveldb::Slice key = leveldb::Slice(reinterpret_cast<char *>(key_bytes), key_len);
         std::string value;
@@ -197,6 +201,7 @@ jboolean jni_database_exists(JNIEnv *env, jobject thiz, jlong nativeObject, jbyt
             return JNI_FALSE;
         } else {
             genearal_exception_throw(env, status.ToString().c_str());
+            return JNI_FALSE;
         }
     }
 }
@@ -209,6 +214,7 @@ jobject jni_database_iterator(JNIEnv *env, jobject thiz, jlong nativeObject) {
         if (nativeIt == NULL) {
             delete it;
             genearal_exception_throw(env, "OutOfMemory");
+            return NULL;
         } else {
             memset(nativeIt, 0, sizeof(*nativeIt));
             nativeIt->it = it;
@@ -220,6 +226,7 @@ jobject jni_database_iterator(JNIEnv *env, jobject thiz, jlong nativeObject) {
     } else {
         genearal_exception_throw(env, it->status().ToString().c_str());
         delete it;
+        return NULL;
     }
 }
 
@@ -259,6 +266,7 @@ jboolean jni_iterator_is_valid(JNIEnv *env, jobject thiz, jlong nativeObject) {
     bool valid = native->it->Valid();
     if (!native->it->status().ok()) {
         genearal_exception_throw(env, native->it->status().ToString().c_str());
+        return JNI_FALSE;
     } else {
         return (jboolean)valid;
     }
@@ -268,10 +276,12 @@ jbyteArray jni_iterator_key(JNIEnv *env, jobject thiz, jlong nativeObject) {
     struct IteratorNative *native = (IteratorNative *) nativeObject;
     if (!native->it->Valid() || !native->it->status().ok()) {
         genearal_exception_throw(env, "Cursor is not valid");
+        return NULL;
     } else {
         const leveldb::Slice &slice = native->it->key();
         if (!native->it->status().ok()) {
             genearal_exception_throw(env, native->it->status().ToString().c_str());
+            return NULL;
         } else {
             char *elems = const_cast<char *>(slice.data());
             jbyteArray array = env->NewByteArray(slice.size() * sizeof(jbyte));
@@ -285,10 +295,12 @@ jbyteArray jni_iterator_value(JNIEnv *env, jobject thiz, jlong nativeObject) {
     struct IteratorNative *native = (IteratorNative *) nativeObject;
     if (!native->it->Valid() || !native->it->status().ok()) {
         genearal_exception_throw(env, "Cursor is not valid");
+        return NULL;
     } else {
         const leveldb::Slice &slice = native->it->value();
         if (!native->it->status().ok()) {
             genearal_exception_throw(env, native->it->status().ToString().c_str());
+            return NULL;
         } else {
             char* elems = const_cast<char*>(slice.data());
             jbyteArray array = env->NewByteArray(slice.size() * sizeof(jbyte));

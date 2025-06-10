@@ -1,0 +1,38 @@
+name: Android CI
+
+on:
+  push:
+    branches: [ "master" ] # Or your main development branch
+  pull_request:
+    branches: [ "master" ] # Or your main development branch
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive' # To ensure your submodules are checked out
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          # Specify the SDK components you need.
+          # Adjust the build-tools and platforms versions to match your project.
+          packages: >
+            platform-tools
+
+      - name: Build and check
+        run: ./gradlew build check
+
+      - name: Publish to Maven Local
+        run: ./gradlew :lib-leveldb-jni:publishToMavenLocal

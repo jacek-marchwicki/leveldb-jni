@@ -1,0 +1,32 @@
+[versions]
+sdk-compile = "35"
+sdk-min = "23"
+sdk-target = "36"
+sdk-ndk = "28.1.13356709"
+
+agp = "8.10.1"
+kotlin = "2.0.21"
+junitVersion = "1.2.1"
+support-annotation = "1.9.1"
+
+testing-espresso-core = "3.6.1"
+testing-espresso-rules = "1.6.1"
+testing-espresso-runner = "1.6.2"
+testing-truth = "1.4.4"
+# Note - version 2.2.5 fails on CI because of https://github.com/GoogleCloudPlatform/artifact-registry-maven-tools/issues/106
+artifactregistry = "2.2.0"
+
+[libraries]
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+support-annotation = { module = "androidx.annotation:annotation", version.ref = "support-annotation" }
+testing-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "testing-espresso-core" }
+testing-espresso-rules = { module = "androidx.test:rules", version.ref = "testing-espresso-rules" }
+testing-espresso-runner = { module = "androidx.test:runner", version.ref = "testing-espresso-runner" }
+testing-truth = { module = "com.google.truth:truth", version.ref = "testing-truth" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+artifactregistry = { id = "com.google.cloud.artifactregistry.gradle-plugin", version.ref = "artifactregistry" }

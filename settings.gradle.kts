@@ -1,5 +1,5 @@
 /**
- * Copyright [2016] <jacek.marchwicki@gmail.com>
+ * Copyright [2025] <jacek.marchwicki@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,27 @@
  * limitations under the License.
  */
 
-buildscript {
+pluginManagement {
     repositories {
+        google {
+            content {
+                includeGroupByRegex("com\\.android.*")
+                includeGroupByRegex("com\\.google.*")
+                includeGroupByRegex("androidx.*")
+            }
+        }
         mavenCentral()
-        jcenter()
-        maven { url 'https://maven.google.com' }
+        gradlePluginPortal()
     }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0-beta6'
-        classpath 'com.android.tools.build:gradle-experimental:0.11.0-beta6'
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
-        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.0'
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
     }
 }
 
-allprojects {
-    repositories {
-        mavenCentral()
-        jcenter()
-    }
-}
+rootProject.name = "leveldb-jni"
+include(":lib-leveldb-jni")
+include(":sample")
